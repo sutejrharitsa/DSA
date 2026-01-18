@@ -40,7 +40,7 @@ const DSA_TOPICS = [
     }
 ];
 
-export default function DSAPanel() {
+export default function DSAPanel({ onVisualize }) {
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
@@ -55,17 +55,6 @@ export default function DSAPanel() {
 
     return (
         <div className="h-full glass-dashboard !w-full !p-8 flex flex-col justify-center relative overflow-hidden">
-            {/* Progress Bar Top */}
-            {/*<div className="absolute top-0 left-0 w-full h-1 bg-white/10">
-                <motion.div
-                    key={index}
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 10, ease: "linear" }}
-                    className="h-full bg-blue-500/50 blur-[2px]"
-                />
-            </div>*/}
-
             <AnimatePresence mode='wait'>
                 <motion.div
                     key={topic.id}
@@ -97,6 +86,18 @@ export default function DSAPanel() {
                             </span>
                         ))}
                     </div>
+
+                    {/* Visualize Button */}
+                    <div className="mt-8 pt-6 border-t border-white/10">
+                        <button
+                            onClick={onVisualize}
+                            className="w-full py-3 border-white/60 hover:bg-blue-500/30 text-blue-200 hover:text-white rounded-xl border border-blue-500/30 transition-all font-medium flex items-center justify-center gap-2"
+                            
+                        >
+                            Visualize Real-Time State
+                        </button>
+                    </div>
+
                 </motion.div>
             </AnimatePresence>
 

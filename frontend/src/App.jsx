@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NotificationCenter from './components/NotificationCenter';
 import DSAPanel from './components/DSAPanel';
+import DSAVisualizerModal from './components/DSAVisualizerModal';
 
 const API_URL = 'http://localhost:8001';
 
@@ -11,6 +12,9 @@ function App() {
     const [isDND, setIsDND] = useState(false);
     const [globalSummary, setGlobalSummary] = useState(null);
     const [modeName, setModeName] = useState("Normal");
+
+    // New State for Visualizer Modal
+    const [isVizOpen, setIsVizOpen] = useState(false);
 
     // Poll Backend
     const fetchState = async () => {
@@ -70,12 +74,15 @@ function App() {
             <div className="aurora-bg"></div>
             <div className="aurora-blur"></div>
 
+            {/* Visualizer Modal */}
+            <DSAVisualizerModal isOpen={isVizOpen} onClose={() => setIsVizOpen(false)} />
+
             {/* SPLIT LAYOUT CONTAINER */}
             <div className="container mx-auto h-screen flex items-center justify-center p-12 gap-10">
 
                 {/* LEFT: DSA Explainer (1/3) */}
                 <div className="w-[35%] h-[750px] relative z-10">
-                    <DSAPanel />
+                    <DSAPanel onVisualize={() => setIsVizOpen(true)} />
                 </div>
 
                 {/* RIGHT: Notifications (2/3) */}
