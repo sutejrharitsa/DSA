@@ -295,137 +295,142 @@ const DSAVisualizerModal = ({ isOpen, onClose }) => {
         }
     };
 
-    if (!isOpen) return null;
-
     return (
         <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-xl"
-                onClick={onClose}
-            >
-                {/* WINDOW CONTAINER */}
+            {isOpen && (
                 <motion.div
-                    // ULTRA-APPLE GENIE SIMULATION
-                    initial={{
-                        opacity: 0,
-                        scale: 0.05,
-                        x: -400, // Deep left (button position)
-                        y: 450,  // Deep down
-                        skewX: -45, // Extreme skew
-                        scaleY: 0.1, // Flattened
-                        borderRadius: "100px" // Blob-like
-                    }}
-                    animate={{
-                        opacity: 1,
-                        scale: 1,
-                        x: 0,
-                        y: 0,
-                        skewX: 0,
-                        scaleY: 1,
-                        borderRadius: "12px", // Normal window radius
-                    }}
-                    exit={{
-                        opacity: 0,
-                        scale: 0.05,
-                        x: -400,
-                        y: 450,
-                        skewX: -60, // Even more skew on exit (The "Suck")
-                        scaleY: 1.5, // Stretch as it gets sucked
-                        borderRadius: "200px",
-                        transition: { duration: 0.45, ease: [0.68, -0.6, 0.32, 1.6] } // BackIn curve
-                    }}
-                    transition={{
-                        type: "spring",
-                        stiffness: 140,
-                        damping: 18,
-                        mass: 1.2 // Heavier feel
-                    }}
-                    style={{ transformOrigin: "bottom left" }}
-                    className="w-full max-w-6xl h-[85vh] bg-[#1c1c1e] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-white/10 ring-1 ring-black/50"
-                    onClick={(e) => e.stopPropagation()}
+                    key="modal-window"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-xl"
+                    onClick={onClose}
                 >
-                    {/* MACOS TITLE BAR */}
-                    <div className="h-12 bg-[#2c2c2e] border-b border-black/50 flex items-center px-4 justify-between select-none relative" onDoubleClick={onClose}>
+                    {/* WINDOW CONTAINER */}
+                    <motion.div
+                        // REFINED APPLE GENIE SIMULATION
+                        initial={{
+                            opacity: 0,
+                            scale: 0.05,
+                            x: -350, // Button position relative to center
+                            y: 400,
+                            skewX: -40, // Strong initial skew
+                            scaleY: 0.1,
+                            borderRadius: "80px"
+                        }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            x: 0,
+                            y: 0,
+                            skewX: 0,
+                            scaleY: 1,
+                            borderRadius: "12px",
+                            transition: {
+                                type: "spring",
+                                stiffness: 200,
+                                damping: 25,
+                                mass: 1
+                            }
+                        }}
+                        exit={{
+                            opacity: 0,
+                            scale: 0,
+                            x: -350,
+                            y: 400,
+                            skewX: -60, // Exaggerated suck on close
+                            scaleY: 1.5, // Stretch length
+                            borderRadius: "100px",
+                            transition: {
+                                duration: 0.6,
+                                ease: [0.2, 0, 0, 1] // "Suck" ease (fast start, slow end)
+                            }
+                        }}
+                        style={{ transformOrigin: "bottom left" }}
+                        className="w-full max-w-6xl h-[85vh] bg-[#1c1c1e] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-white/10 ring-1 ring-black/50"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* MACOS TITLE BAR */}
+                        <div className="h-12 bg-[#2c2c2e] border-b border-black/50 flex items-center px-4 justify-between select-none relative" onDoubleClick={onClose}>
 
-                        {/* Traffic Lights */}
-                        <div className="flex gap-2 group">
-                            <button onClick={onClose} className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] hover:bg-[#ff5f57]/80 flex items-center justify-center">
-                                <X size={8} className="text-black/50 opacity-0 group-hover:opacity-100" strokeWidth={3} />
-                            </button>
-                            <div className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d8a213]"></div>
-                            <div className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]"></div>
-                        </div>
-
-                        {/* Title */}
-                        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-60">
-                            <Server size={14} className="text-gray-400" />
-                            <span className="text-sm font-semibold text-gray-200 font-sans tracking-wide">System Internals</span>
-                        </div>
-
-                        {/* Right Actions (Dummy) */}
-                        <div className="w-16"></div>
-                    </div>
-
-                    {/* WINDOW CONTENT */}
-                    <div className="flex-1 flex overflow-hidden">
-
-                        {/* SIDEBAR TABS */}
-                        <div className="w-64 bg-[#252527] border-r border-black/50 flex flex-col pt-4 px-2">
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider px-3 mb-2">Structure</div>
-                            {[
-                                { id: 'heap', icon: Server, label: 'Priority Heap' },
-                                { id: 'graph', icon: Network, label: 'Dep. Graph' },
-                                { id: 'stack', icon: Layers, label: 'Undo Stack' }
-                            ].map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all mb-1
-                                        ${activeTab === tab.id
-                                            ? 'bg-[#0a84ff] text-white shadow-md'
-                                            : 'text-gray-400 hover:bg-white/5 hover:text-white'}
-                                    `}
-                                >
-                                    <tab.icon size={16} />
-                                    {tab.label}
+                            {/* Traffic Lights */}
+                            <div className="flex gap-2 group">
+                                <button onClick={onClose} className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] hover:bg-[#ff5f57]/80 flex items-center justify-center">
+                                    <X size={8} className="text-black/50 opacity-0 group-hover:opacity-100" strokeWidth={3} />
                                 </button>
-                            ))}
+                                <div className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d8a213]"></div>
+                                <div className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]"></div>
+                            </div>
+
+                            {/* Title */}
+                            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-60">
+                                <Server size={14} className="text-gray-400" />
+                                <span className="text-sm font-semibold text-gray-200 font-sans tracking-wide">System Internals</span>
+                            </div>
+
+                            {/* Right Actions (Dummy) */}
+                            <div className="w-16"></div>
                         </div>
 
-                        {/* MAIN CANVAS */}
-                        <div className="flex-1 bg-[#1c1c1e] p-6 relative">
-                            {/* Background Grid */}
-                            <div className="absolute inset-0 opacity-[0.03]"
-                                style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }}
-                            />
+                        {/* WINDOW CONTENT */}
+                        <div className="flex-1 flex overflow-hidden">
 
-                            {loading && !vizData ? (
-                                <div className="h-full flex items-center justify-center text-gray-500 flex-col gap-3">
-                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#0a84ff]"></div>
-                                    <span className="text-sm font-medium">Connecting...</span>
-                                </div>
-                            ) : (
-                                vizData && (
-                                    <motion.div
-                                        key={activeTab}
-                                        initial={{ opacity: 0, scale: 0.98 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="h-full relative z-10"
+                            {/* SIDEBAR TABS */}
+                            <div className="w-64 bg-[#252527] border-r border-black/50 flex flex-col pt-4 px-2">
+                                <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider px-3 mb-2">Structure</div>
+                                {[
+                                    { id: 'heap', icon: Server, label: 'Priority Heap' },
+                                    { id: 'graph', icon: Network, label: 'Dep. Graph' },
+                                    { id: 'stack', icon: Layers, label: 'Undo Stack' }
+                                ].map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all mb-1
+                                        ${activeTab === tab.id
+                                                ? 'bg-[#0a84ff] text-white shadow-md'
+                                                : 'text-gray-400 hover:bg-white/5 hover:text-white'}
+                                    `}
                                     >
-                                        {activeTab === 'heap' && <HeapView data={vizData.heap} />}
-                                        {activeTab === 'stack' && <StackView data={vizData.stack} />}
-                                        {activeTab === 'graph' && <GraphView data={vizData.graph} fullState={vizData} />}
-                                    </motion.div>
-                                )
-                            )}
+                                        <tab.icon size={16} />
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* MAIN CANVAS */}
+                            <div className="flex-1 bg-[#1c1c1e] p-6 relative">
+                                {/* Background Grid */}
+                                <div className="absolute inset-0 opacity-[0.03]"
+                                    style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+                                />
+
+                                {loading && !vizData ? (
+                                    <div className="h-full flex items-center justify-center text-gray-500 flex-col gap-3">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#0a84ff]"></div>
+                                        <span className="text-sm font-medium">Connecting...</span>
+                                    </div>
+                                ) : (
+                                    vizData && (
+                                        <motion.div
+                                            key={activeTab}
+                                            initial={{ opacity: 0, scale: 0.98 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="h-full relative z-10"
+                                        >
+                                            {activeTab === 'heap' && <HeapView data={vizData.heap} />}
+                                            {activeTab === 'stack' && <StackView data={vizData.stack} />}
+                                            {activeTab === 'graph' && <GraphView data={vizData.graph} fullState={vizData} />}
+                                        </motion.div>
+                                    )
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </motion.div>
-            </motion.div>
+            )}
         </AnimatePresence>
     );
 };
