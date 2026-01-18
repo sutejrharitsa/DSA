@@ -41,7 +41,7 @@ const GraphView = ({ data, fullState }) => {
     }, [data]);
 
     return (
-        <div className="h-full w-full flex bg-[#1e1e1e]/50 rounded-xl overflow-hidden border border-white/5 relative backdrop-blur-sm">
+        <div className="h-full w-full flex bg-[#1e1e1e]/50 rounded-xl overflow-hidden border border-white/5 relative">
             {/* GRAPH AREA */}
             <div className={`flex-1 relative transition-all duration-500 ease-[0.19,1,0.22,1] ${selected ? 'w-2/3' : 'w-full'}`}>
                 {/* Click Backdrop to Deselect */}
@@ -300,13 +300,18 @@ const DSAVisualizerModal = ({ isOpen, onClose }) => {
             {isOpen && (
                 <motion.div
                     key="modal-window"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-xl"
-                    onClick={onClose}
+                    className="fixed inset-0 z-[100] flex items-center justify-center"
                 >
+                    {/* BACKDROP - Fades out independently */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1.0 }}
+                        className="absolute inset-0 bg-black/40 backdrop-blur-xl"
+                        onClick={onClose}
+                    />
+
                     {/* WINDOW CONTAINER */}
                     <motion.div
                         // REFINED APPLE GENIE SIMULATION
@@ -335,21 +340,21 @@ const DSAVisualizerModal = ({ isOpen, onClose }) => {
                             }
                         }}
                         exit={{
-                            opacity: 0,
+                            opacity: 1,
                             scale: 0,
                             x: -350,
                             y: 400,
                             skewX: -60, // Exaggerated suck on close
-                            scaleY: 1.5, // Stretch length
-                            borderRadius: "100px",
+                            scaleY: 0, // Shrink y as well to simulate disappearing into the point
+                            borderRadius: "200px", // Turn into a blob
                             transition: {
-                                duration: 0.6,
-                                ease: [0.2, 0, 0, 1] // "Suck" ease (fast start, slow end)
+                                duration: 1.2,
+                                ease: [0.2, 0, 0, 1] // "Suck" ease
                             }
                         }}
-                        style={{ transformOrigin: "bottom left" }}
-                        className="w-full max-w-6xl h-[85vh] bg-[#1c1c1e] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-white/10 ring-1 ring-black/50"
+                        style={{ transformOrigin: "bottom left", backfaceVisibility: "hidden" }}
                         onClick={(e) => e.stopPropagation()}
+                        className="w-full max-w-6xl h-[85vh] bg-[#1c1c1e] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-white/10 ring-1 ring-black/50 relative z-50"
                     >
                         {/* MACOS TITLE BAR */}
                         <div className="h-12 bg-[#2c2c2e] border-b border-black/50 flex items-center px-4 justify-between select-none relative" onDoubleClick={onClose}>
@@ -377,7 +382,7 @@ const DSAVisualizerModal = ({ isOpen, onClose }) => {
                         <div className="flex-1 flex overflow-hidden">
 
                             {/* SIDEBAR TABS */}
-                            <div className="w-64 bg-[#252527] border-r border-black/50 flex flex-col pt-4 px-2">
+                            <div className="w-64 bg-[#252527] border-r border-black/50 flex flex-col pt-4 px-2 antialiased z-10">
                                 <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider px-3 mb-2">Structure</div>
                                 {[
                                     { id: 'heap', icon: Server, label: 'Priority Heap' },

@@ -46,7 +46,17 @@ class PriorityEngine:
 
         # Keywords Bonus
         content = notif.content.lower()
-        if "urgent" in content or "asap" in content: urgency_score += 80.0
+        sender = notif.sender.lower()
+        
+        # FAMILY PRIORITY RULE (Above Boss, Below Emergency)
+        FAMILY_MEMBERS = ["mom", "dad", "wife", "husband"]
+        is_family = any(m in sender for m in FAMILY_MEMBERS)
+        is_urgent_text = "urgent" in content or "asap" in content
+        
+        if is_family and is_urgent_text:
+            urgency_score += 150.0 # Creates score ~200+ (Beats Boss ~120, Below Emergency ~400)
+        elif "urgent" in content or "asap" in content: 
+            urgency_score += 80.0
         
         if notif.app_type == AppType.EMERGENCY: urgency_score += 300.0
 

@@ -143,3 +143,61 @@ def undo():
     if not system: raise HTTPException(500, "System not initialized")
     result = system.restore_last_deleted()
     return {"result": result, "system_state": _get_system_state()}
+
+@app.get("/visualize")
+def get_visualizer_data():
+    """Reserved endpoint for the DSA Visualizer. Returns explicit internal state."""
+    return _get_visualizer_state()
+
+def _get_visualizer_state():
+    if system is None: return {}
+    
+    try:
+        # 1. Heap State (Explicit List)
+        raw_heap = system.delivery_queue.get_all_sorted()
+        heap_data = []
+        for n in raw_heap:
+            heap_data.append({
+                "id": str(n.id),
+                "priority": float(n.priority_score),
+                "app": str(n.app_type.value),
+                "content": str(n.content)
+            })
+
+        # 2. Buffer State (Explicit List)
+        buffer_data = []
+        for n in system.dnd_buffer:
+            buffer_data.append({
+                "id": str(n.id),
+                "priority": float(n.priority_score),
+                "app": str(n.app_type.value),
+                "content": str(n.content)
+            })
+
+        # 3. Undo Stack State (Explicit List)
+        stack_data = []
+        # Access protection: UndoStack has `_stack`
+        if hasattr(system.undo_stack, '_stack'):
+            for n in system.undo_stack._stack:
+                stack_data.append(f"[{n.app_type.value.upper()}] {n.content[:30]}...")
+        # Reverse to show Top of Stack first
+        stack_data.reverse()
+
+        # 3. Graph State (Explicit Dict of Strings)
+        graph_data = {}
+        if hasattr(system.graph, 'adj_list'):
+            for parent, children in system.graph.adj_list.items():
+                p_key = str(parent.value) if isinstance(parent, AppType) else str(parent)
+                c_list = [str(c.value) if isinstance(c, AppType) else str(c) for c in children]
+                graph_data[p_key] = c_list
+
+        return {
+            "heap": heap_data,
+            "buffer": buffer_data,
+            "stack": stack_data,
+            "graph": graph_data
+        }
+    except Exception as e:
+        print("VISUALIZER ERROR:")
+        traceback.print_exc()
+        return {"error": str(e)}
